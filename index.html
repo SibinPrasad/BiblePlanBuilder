@@ -138,6 +138,7 @@
             let plan = "";
             let dayCounter = 1;
             let verseCounter = 0;
+            let currentDayVerses = 0;
         
             bible.forEach(book => {
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
@@ -146,21 +147,22 @@
                     let verseStart = 1;
         
                     while (versesInChapter > 0) {
-                        const versesRemainingForDay = versesPerDay - verseCounter;
+                        const versesRemainingForDay = versesPerDay - currentDayVerses;
         
                         if (versesInChapter <= versesRemainingForDay) {
                             plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesInChapter - 1}<br>`;
-                            verseCounter += versesInChapter;
+                            currentDayVerses += versesInChapter;
                             versesInChapter = 0;
-                            if (verseCounter === versesPerDay) {
-                                verseCounter = 0;
+        
+                            if (currentDayVerses === versesPerDay) {
+                                currentDayVerses = 0;
                                 dayCounter++;
                             }
                         } else {
                             plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesRemainingForDay - 1}<br>`;
                             versesInChapter -= versesRemainingForDay;
                             verseStart += versesRemainingForDay;
-                            verseCounter = 0;
+                            currentDayVerses = 0;
                             dayCounter++;
                         }
                     }
@@ -170,6 +172,7 @@
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
+
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
