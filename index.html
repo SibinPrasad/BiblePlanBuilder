@@ -128,7 +128,7 @@
             const days = months * 30; // Total number of days
             let totalChapters = 0;
         
-            // Calculate the total number of chapters in the Bible
+            // Calculate total chapters in the Bible
             bible.forEach(book => {
                 totalChapters += book.chapters.length;
             });
@@ -137,34 +137,30 @@
         
             let plan = "";
             let dayCounter = 1;
-            let currentDayChapters = 0;
+            let chapterCounter = 0;
         
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
                 let chapterStart = 1;
         
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (currentDayChapters === 0) {
+                    if (chapterCounter === 0) {
                         plan += `Day ${dayCounter}: `;
                     }
         
-                    currentDayChapters++;
+                    chapterCounter++;
         
-                    if (currentDayChapters === 1) {
+                    if (chapterCounter === 1) {
                         chapterStart = chapterIndex + 1;
                     }
         
-                    if (currentDayChapters === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
+                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
                         plan += `${book.book} Chapter ${chapterStart}-${chapterIndex + 1}<br>`;
-                        currentDayChapters = 0;
+                        chapterCounter = 0;
                         dayCounter++;
                     }
         
-                    if (dayCounter > days && chapterIndex === book.chapters.length - 1 && i === bible.length - 1) {
-                        break;
-                    } else if (dayCounter > days && chapterIndex < book.chapters.length - 1) {
-                        plan += `${book.book} Chapter ${chapterStart}-${book.chapters.length}<br>`;
-                        currentDayChapters = 0;
+                    if (dayCounter > days) {
                         break;
                     }
                 }
@@ -172,6 +168,11 @@
                 if (dayCounter > days) {
                     break;
                 }
+            }
+        
+            // Ensure any remaining chapters are added to the last day
+            if (chapterCounter > 0 && dayCounter <= days) {
+                plan += `${book.book} Chapter ${chapterStart}-${book.chapters.length}<br>`;
             }
         
             document.getElementById('plan').innerHTML = plan;
