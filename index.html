@@ -124,30 +124,30 @@
                 alert("Please enter a valid number of months (1-12).");
                 return;
             }
-
+        
             const days = months * 30; // assuming 30 days per month
             let totalVerses = 0;
-
+        
             // Calculate total verses in the entire Bible
             bible.forEach(book => {
                 totalVerses += book.chapters.reduce((a, b) => a + b, 0);
             });
-
+        
             const versesPerDay = Math.ceil(totalVerses / days);
-
+        
             let plan = "";
             let dayCounter = 1;
             let verseCounter = 0;
-
+        
             bible.forEach(book => {
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
                     let versesInChapter = book.chapters[chapterIndex];
                     let chapterStart = chapterIndex + 1;
                     let verseStart = 1;
-
+        
                     while (versesInChapter > 0) {
                         const versesRemainingForDay = versesPerDay - verseCounter;
-
+        
                         if (versesInChapter <= versesRemainingForDay) {
                             plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesInChapter - 1}<br>`;
                             verseCounter += versesInChapter;
@@ -166,7 +166,7 @@
                     }
                 }
             });
-
+        
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
