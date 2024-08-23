@@ -137,29 +137,28 @@
         
             let plan = "";
             let dayCounter = 1;
-            let chaptersToday = 0;
+            let chapterCounter = 0;
+            let startChapter = 1;
+            let currentBook = bible[0].book;
         
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
         
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (chaptersToday === 0) {
-                        plan += `Day ${dayCounter}: `;
+                    if (chapterCounter === 0) {
+                        startChapter = chapterIndex + 1;
+                        currentBook = book.book;
                     }
         
-                    plan += `${book.book} Chapter ${chapterIndex + 1}`;
-                    chaptersToday++;
+                    chapterCounter++;
         
-                    // Check if the day's reading is done
-                    if (chaptersToday === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        plan += "<br>";
-                        chaptersToday = 0;
+                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
+                        plan += `Day ${dayCounter}: ${currentBook} Ch ${startChapter}-${chapterIndex + 1}<br>`;
+                        chapterCounter = 0;
                         dayCounter++;
-                    } else {
-                        plan += ", ";
                     }
         
-                    // If we've reached the total number of days, exit
+                    // If we reach the last day, stop
                     if (dayCounter > days) {
                         break;
                     }
@@ -170,14 +169,10 @@
                 }
             }
         
-            // Add any remaining chapters to the last day
-            if (chaptersToday > 0) {
-                plan += "<br>";
-            }
-        
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
+
 
 
         function downloadPDF() {
