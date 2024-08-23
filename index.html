@@ -41,6 +41,12 @@
 <body>
     <h1>Bible Plan Builder</h1>
     <div class="container">
+        <p>Select the part of the Bible:</p>
+        <select id="testament">
+            <option value="full">Full Bible</option>
+            <option value="old">Old Testament</option>
+            <option value="new">New Testament</option>
+        </select>
         <p>Enter the number of months you want your Bible reading plan to cover (1-12 months):</p>
         <input type="number" id="months" placeholder="Enter number of months" min="1" max="12">
         <button onclick="generatePlan()">Generate Plan</button>
@@ -120,16 +126,29 @@
 
         function generatePlan() {
             const months = document.getElementById('months').value;
+            const testament = document.getElementById('testament').value;
+        
             if (months < 1 || months > 12) {
                 alert("Please enter a valid number of months (1-12).");
                 return;
             }
         
             const days = months * 30; // Total number of days
+        
+            // Filter the Bible based on the selected testament
+            let filteredBible;
+            if (testament === "old") {
+                filteredBible = bible.filter(book => oldTestamentBooks.includes(book.book));
+            } else if (testament === "new") {
+                filteredBible = bible.filter(book => newTestamentBooks.includes(book.book));
+            } else {
+                filteredBible = bible;
+            }
+        
             let totalChapters = 0;
         
-            // Calculate total chapters in the Bible
-            bible.forEach(book => {
+            // Calculate total chapters in the filtered Bible
+            filteredBible.forEach(book => {
                 totalChapters += book.chapters.length;
             });
         
@@ -139,10 +158,10 @@
             let dayCounter = 1;
             let chapterCounter = 0;
             let startChapter = 1;
-            let currentBook = bible[0].book;
+            let currentBook = filteredBible[0].book;
         
-            for (let i = 0; i < bible.length; i++) {
-                const book = bible[i];
+            for (let i = 0; i < filteredBible.length; i++) {
+                const book = filteredBible[i];
         
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
                     if (chapterCounter === 0) {
@@ -175,14 +194,34 @@
             }
         
             // If there are remaining chapters on the last day, add them
-            if (chapterCounter > 0) {
-                plan += `Day ${dayCounter}: ${currentBook} Ch ${startChapter}-${bible[bible.length - 1].chapters.length}<br>`;
+            if (chapterCounter > 0 && dayCounter <= days) {
+                plan += `Day ${dayCounter}: ${currentBook} Ch ${startChapter}-${filteredBible[filteredBible.length - 1].chapters.length}<br>`;
             }
         
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
-
+        
+        // Arrays to filter books based on the testament
+        const oldTestamentBooks = [
+            "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+            "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel",
+            "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles",
+            "Ezra", "Nehemiah", "Esther", "Job", "Psalms",
+            "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
+            "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea",
+            "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum",
+            "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi"
+        ];
+        
+        const newTestamentBooks = [
+            "Matthew", "Mark", "Luke", "John", "Acts",
+            "Romans", "1 Corinthians", "2 Corinthians", "Galatians",
+            "Ephesians", "Philippians", "Colossians", "1 Thessalonians",
+            "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus",
+            "Philemon", "Hebrews", "James", "1 Peter", "2 Peter",
+            "1 John", "2 John", "3 John", "Jude", "Revelation"
+        ];
 
 
         function downloadPDF() {
