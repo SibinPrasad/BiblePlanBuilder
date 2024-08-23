@@ -140,11 +140,13 @@
             let chapterCounter = 0;
             let startChapter = 1;
             let currentBook = "";
-            let chaptersRemaining = chaptersPerDay;
+            let currentBookChapters = 0;
         
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
-                for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
+                currentBookChapters = book.chapters.length;
+        
+                for (let chapterIndex = 0; chapterIndex < currentBookChapters; chapterIndex++) {
                     if (chapterCounter === 0) {
                         plan += `Day ${dayCounter}: `;
                         currentBook = book.book;
@@ -152,15 +154,26 @@
                     }
         
                     chapterCounter++;
-                    chaptersRemaining--;
         
-                    if (chaptersRemaining === 0 || chapterIndex === book.chapters.length - 1) {
+                    if (chapterCounter === chaptersPerDay || chapterIndex === currentBookChapters - 1) {
                         plan += `${currentBook} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
                         chapterCounter = 0;
-                        chaptersRemaining = chaptersPerDay;
                         dayCounter++;
+        
+                        if (dayCounter > days) {
+                            break;
+                        }
                     }
                 }
+        
+                if (dayCounter > days) {
+                    break;
+                }
+            }
+        
+            // Ensure the last chapters are added even if the loop ends
+            if (chapterCounter > 0 && dayCounter <= days) {
+                plan += `${currentBook} Chapter ${startChapter}-${currentBookChapters}<br>`;
             }
         
             document.getElementById('plan').innerHTML = plan;
