@@ -137,42 +137,43 @@
         
             let plan = "";
             let dayCounter = 1;
-            let chapterCounter = 0;
+            let chaptersToday = 0;
         
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
-                let chapterStart = 1;
         
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (chapterCounter === 0) {
+                    if (chaptersToday === 0) {
                         plan += `Day ${dayCounter}: `;
                     }
         
-                    chapterCounter++;
+                    plan += `${book.book} Chapter ${chapterIndex + 1}`;
+                    chaptersToday++;
         
-                    if (chapterCounter === 1) {
-                        chapterStart = chapterIndex + 1;
-                    }
-        
-                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        plan += `${book.book} Chapter ${chapterStart}-${chapterIndex + 1}<br>`;
-                        chapterCounter = 0;
+                    // If chapters for the day are completed, or if it’s the last chapter of the book
+                    if (chaptersToday === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
+                        plan += "<br>";
+                        chaptersToday = 0;
                         dayCounter++;
+                    } else {
+                        plan += ", ";
                     }
         
+                    // If we've reached the total number of days, exit
                     if (dayCounter > days) {
                         break;
                     }
                 }
         
+                // Exit the outer loop if the plan has covered all days
                 if (dayCounter > days) {
                     break;
                 }
             }
         
-            // Ensure any remaining chapters are added to the last day
-            if (chapterCounter > 0 && dayCounter <= days) {
-                plan += `${book.book} Chapter ${chapterStart}-${book.chapters.length}<br>`;
+            // Add any remaining chapters if they don't fit neatly into the plan
+            if (chaptersToday > 0) {
+                plan += "<br>";
             }
         
             document.getElementById('plan').innerHTML = plan;
