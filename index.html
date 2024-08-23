@@ -126,11 +126,10 @@
             }
 
             const days = months * 30; // assuming 30 days per month
-            let totalChapters = 0;
             let totalVerses = 0;
 
+            // Calculate total verses in the entire Bible
             bible.forEach(book => {
-                totalChapters += book.chapters.length;
                 totalVerses += book.chapters.reduce((a, b) => a + b, 0);
             });
 
@@ -139,29 +138,33 @@
             let plan = "";
             let dayCounter = 1;
             let verseCounter = 0;
-            let chapterStart = 1;
-            let verseStart = 1;
 
             bible.forEach(book => {
-                book.chapters.forEach((verseCount, chapterIndex) => {
-                    while (verseCounter + verseCount > versesPerDay) {
-                        const versesRemaining = versesPerDay - verseCounter;
-                        plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesRemaining - 1}<br>`;
-                        verseStart += versesRemaining;
-                        verseCount -= versesRemaining;
-                        verseCounter = 0;
-                        dayCounter++;
-                        chapterStart = chapterIndex + 1;
-                    }
+                for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
+                    let versesInChapter = book.chapters[chapterIndex];
+                    let chapterStart = chapterIndex + 1;
+                    let verseStart = 1;
 
-                    verseCounter += verseCount;
-                    if (verseCounter <= versesPerDay) {
-                        plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + verseCount - 1}<br>`;
-                        verseCounter = 0;
-                        verseStart = 1;
-                        chapterStart = chapterIndex + 2;
+                    while (versesInChapter > 0) {
+                        const versesRemainingForDay = versesPerDay - verseCounter;
+
+                        if (versesInChapter <= versesRemainingForDay) {
+                            plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesInChapter - 1}<br>`;
+                            verseCounter += versesInChapter;
+                            versesInChapter = 0;
+                            if (verseCounter === versesPerDay) {
+                                verseCounter = 0;
+                                dayCounter++;
+                            }
+                        } else {
+                            plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesRemainingForDay - 1}<br>`;
+                            versesInChapter -= versesRemainingForDay;
+                            verseStart += versesRemainingForDay;
+                            verseCounter = 0;
+                            dayCounter++;
+                        }
                     }
-                });
+                }
             });
 
             document.getElementById('plan').innerHTML = plan;
