@@ -154,7 +154,7 @@
                     chapterCounter++;
         
                     if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        plan += `${currentBook} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
+                        plan += `${currentBook} ${startChapter}-${chapterIndex + 1}<br>`;
                         chapterCounter = 0;
                         dayCounter++;
                     }
