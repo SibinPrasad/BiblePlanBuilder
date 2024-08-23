@@ -125,45 +125,47 @@
                 return;
             }
         
-            const days = months * 30; // Number of days in the plan
+            const days = months * 30; // Total number of days
             let totalChapters = 0;
         
-            // Calculate total chapters in the Bible
+            // Calculate the total number of chapters in the Bible
             bible.forEach(book => {
                 totalChapters += book.chapters.length;
             });
         
-            const chaptersPerDay = Math.ceil(totalChapters / days); // Chapters to read each day
+            const chaptersPerDay = Math.ceil(totalChapters / days); // Chapters to cover each day
         
             let plan = "";
             let dayCounter = 1;
-            let chapterCounter = 0;
+            let currentDayChapters = 0;
         
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
-                let startChapter = 1;
+                let chapterStart = 1;
         
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (chapterCounter === 0) {
+                    if (currentDayChapters === 0) {
                         plan += `Day ${dayCounter}: `;
                     }
         
-                    chapterCounter++;
-                    
-                    if (chapterCounter === 1) {
-                        startChapter = chapterIndex + 1;
+                    currentDayChapters++;
+        
+                    if (currentDayChapters === 1) {
+                        chapterStart = chapterIndex + 1;
                     }
         
-                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        plan += `${book.book} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
-                        chapterCounter = 0;
+                    if (currentDayChapters === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
+                        plan += `${book.book} Chapter ${chapterStart}-${chapterIndex + 1}<br>`;
+                        currentDayChapters = 0;
                         dayCounter++;
+                    }
         
-                        if (dayCounter > days) {
-                            break;
-                        }
-                    } else if (chapterCounter < chaptersPerDay) {
-                        continue;
+                    if (dayCounter > days && chapterIndex === book.chapters.length - 1 && i === bible.length - 1) {
+                        break;
+                    } else if (dayCounter > days && chapterIndex < book.chapters.length - 1) {
+                        plan += `${book.book} Chapter ${chapterStart}-${book.chapters.length}<br>`;
+                        currentDayChapters = 0;
+                        break;
                     }
                 }
         
