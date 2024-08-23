@@ -32,15 +32,20 @@
             text-align: left;
             font-size: 0.9em;
         }
+        #download {
+            margin-top: 20px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <h1>Bible Plan Builder</h1>
     <div class="container">
-        <p>Enter the number of months you want your Bible reading plan to cover:</p>
-        <input type="number" id="months" placeholder="Enter number of months" min="1">
+        <p>Enter the number of months you want your Bible reading plan to cover (1-12 months):</p>
+        <input type="number" id="months" placeholder="Enter number of months" min="1" max="12">
         <button onclick="generatePlan()">Generate Plan</button>
         <div id="plan"></div>
+        <button id="download" onclick="downloadPDF()" style="display:none;">Download as PDF</button>
     </div>
 
     <script>
@@ -53,15 +58,20 @@
 
         function generatePlan() {
             const months = document.getElementById('months').value;
+            if (months < 1 || months > 12) {
+                alert("Please enter a valid number of months (1-12).");
+                return;
+            }
+
             const days = months * 30; // assuming 30 days per month
             let totalChapters = 0;
             let totalVerses = 0;
-            
+
             bible.forEach(book => {
                 totalChapters += book.chapters.length;
                 totalVerses += book.chapters.reduce((a, b) => a + b, 0);
             });
-            
+
             const versesPerDay = Math.ceil(totalVerses / days);
 
             let plan = "";
@@ -81,7 +91,7 @@
                         dayCounter++;
                         chapterStart = chapterIndex + 1;
                     }
-                    
+
                     verseCounter += verseCount;
                     if (verseCounter <= versesPerDay) {
                         plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + verseCount - 1}<br>`;
@@ -93,6 +103,18 @@
             });
 
             document.getElementById('plan').innerHTML = plan;
+            document.getElementById('download').style.display = "block";
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let planText = document.getElementById('plan').innerText;
+            doc.setFontSize(12);
+            doc.text(planText, 10, 10, { maxWidth: 190 });
+
+            doc.save('BibleReadingPlan.pdf');
         }
     </script>
 </body>
