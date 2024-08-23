@@ -140,8 +140,8 @@
             let chapterCounter = 0;
             let startChapter = 1;
             let currentBook = "";
+            let chaptersRemaining = chaptersPerDay;
         
-            outerLoop:
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
@@ -152,15 +152,13 @@
                     }
         
                     chapterCounter++;
+                    chaptersRemaining--;
         
-                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        plan += `${currentBook} ${startChapter}-${chapterIndex + 1}<br>`;
+                    if (chaptersRemaining === 0 || chapterIndex === book.chapters.length - 1) {
+                        plan += `${currentBook} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
                         chapterCounter = 0;
+                        chaptersRemaining = chaptersPerDay;
                         dayCounter++;
-                    }
-        
-                    if (dayCounter > days) {
-                        break outerLoop;
                     }
                 }
             }
@@ -168,11 +166,6 @@
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
-
-
-
-
-
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
