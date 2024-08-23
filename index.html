@@ -156,12 +156,21 @@
                         chapterCounter = 0;
                         dayCounter++;
                     }
+        
+                    if (dayCounter > days) {
+                        break;
+                    }
+                }
+        
+                if (dayCounter > days) {
+                    break;
                 }
             });
         
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
+
 
 
 
