@@ -138,8 +138,8 @@
             let plan = "";
             let dayCounter = 1;
             let chapterCounter = 0;
-            let currentBook = "";
             let startChapter = 1;
+            let currentBook = "";
         
             bible.forEach(book => {
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
@@ -151,11 +151,7 @@
         
                     chapterCounter++;
         
-                    if (chapterCounter === chaptersPerDay) {
-                        plan += `${currentBook} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
-                        chapterCounter = 0;
-                        dayCounter++;
-                    } else if (chapterIndex === book.chapters.length - 1) {
+                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
                         plan += `${currentBook} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
                         chapterCounter = 0;
                         dayCounter++;
