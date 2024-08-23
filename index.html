@@ -125,34 +125,34 @@
                 return;
             }
         
-            const days = months * 30; // 30 days per month
+            const days = months * 30; // Number of days based on the input months
             let totalChapters = 0;
         
-            // Calculate total chapters in the entire Bible
+            // Calculate total chapters in the Bible
             bible.forEach(book => {
                 totalChapters += book.chapters.length;
             });
         
-            const chaptersPerDay = Math.ceil(totalChapters / days);
+            const chaptersPerDay = totalChapters / days; // Calculate chapters per day
         
             let plan = "";
+            let currentDayChapters = 0;
             let dayCounter = 1;
-            let chaptersForDay = 0;
         
-            bible.forEach(book => {
+            for (let i = 0; i < bible.length; i++) {
+                const book = bible[i];
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (chaptersForDay === 0) {
+                    if (currentDayChapters === 0) {
                         plan += `Day ${dayCounter}: `;
                     }
         
-                    plan += `${book.book} Ch ${chapterIndex + 1}`;
+                    plan += `${book.book} Chapter ${chapterIndex + 1}`;
+                    currentDayChapters++;
         
-                    chaptersForDay++;
-        
-                    if (chaptersForDay === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
+                    if (currentDayChapters >= chaptersPerDay || chapterIndex === book.chapters.length - 1) {
                         plan += "<br>";
                         dayCounter++;
-                        chaptersForDay = 0;
+                        currentDayChapters = 0;
         
                         if (dayCounter > days) {
                             break;
@@ -163,9 +163,9 @@
                 }
         
                 if (dayCounter > days) {
-                    return;
+                    break;
                 }
-            });
+            }
         
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
