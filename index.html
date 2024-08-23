@@ -125,7 +125,7 @@
                 return;
             }
         
-            const days = months * 30; // Number of days based on the input months
+            const days = months * 30; // Number of days in the plan
             let totalChapters = 0;
         
             // Calculate total chapters in the Bible
@@ -133,32 +133,37 @@
                 totalChapters += book.chapters.length;
             });
         
-            const chaptersPerDay = totalChapters / days; // Calculate chapters per day
+            const chaptersPerDay = Math.ceil(totalChapters / days); // Chapters to read each day
         
             let plan = "";
-            let currentDayChapters = 0;
             let dayCounter = 1;
+            let chapterCounter = 0;
         
             for (let i = 0; i < bible.length; i++) {
                 const book = bible[i];
+                let startChapter = 1;
+        
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (currentDayChapters === 0) {
+                    if (chapterCounter === 0) {
                         plan += `Day ${dayCounter}: `;
                     }
         
-                    plan += `${book.book} Chapter ${chapterIndex + 1}`;
-                    currentDayChapters++;
+                    chapterCounter++;
+                    
+                    if (chapterCounter === 1) {
+                        startChapter = chapterIndex + 1;
+                    }
         
-                    if (currentDayChapters >= chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        plan += "<br>";
+                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
+                        plan += `${book.book} Chapter ${startChapter}-${chapterIndex + 1}<br>`;
+                        chapterCounter = 0;
                         dayCounter++;
-                        currentDayChapters = 0;
         
                         if (dayCounter > days) {
                             break;
                         }
-                    } else {
-                        plan += ", ";
+                    } else if (chapterCounter < chaptersPerDay) {
+                        continue;
                     }
                 }
         
@@ -170,6 +175,7 @@
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
+
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
