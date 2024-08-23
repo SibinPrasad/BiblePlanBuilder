@@ -150,7 +150,7 @@
                     plan += `${book.book} Chapter ${chapterIndex + 1}`;
                     chaptersToday++;
         
-                    // If chapters for the day are completed, or if it’s the last chapter of the book
+                    // Check if the day's reading is done
                     if (chaptersToday === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
                         plan += "<br>";
                         chaptersToday = 0;
@@ -165,13 +165,12 @@
                     }
                 }
         
-                // Exit the outer loop if the plan has covered all days
                 if (dayCounter > days) {
                     break;
                 }
             }
         
-            // Add any remaining chapters if they don't fit neatly into the plan
+            // Add any remaining chapters to the last day
             if (chaptersToday > 0) {
                 plan += "<br>";
             }
