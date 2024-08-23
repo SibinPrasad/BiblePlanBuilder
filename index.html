@@ -141,7 +141,9 @@
             let startChapter = 1;
             let currentBook = "";
         
-            bible.forEach(book => {
+            outerLoop:
+            for (let i = 0; i < bible.length; i++) {
+                const book = bible[i];
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
                     if (chapterCounter === 0) {
                         plan += `Day ${dayCounter}: `;
@@ -158,18 +160,15 @@
                     }
         
                     if (dayCounter > days) {
-                        break;
+                        break outerLoop;
                     }
                 }
-        
-                if (dayCounter > days) {
-                    break;
-                }
-            });
+            }
         
             document.getElementById('plan').innerHTML = plan;
             document.getElementById('download').style.display = "block";
         }
+
 
 
 
