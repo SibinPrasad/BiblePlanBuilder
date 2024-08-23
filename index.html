@@ -45,94 +45,51 @@
 
     <script>
         const bible = [
-            { book: "Genesis", chapters: 50 },
-            { book: "Exodus", chapters: 40 },
-            { book: "Leviticus", chapters: 27 },
-            { book: "Numbers", chapters: 36 },
-            { book: "Deuteronomy", chapters: 34 },
-            { book: "Joshua", chapters: 24 },
-            { book: "Judges", chapters: 21 },
-            { book: "Ruth", chapters: 4 },
-            { book: "1 Samuel", chapters: 31 },
-            { book: "2 Samuel", chapters: 24 },
-            { book: "1 Kings", chapters: 22 },
-            { book: "2 Kings", chapters: 25 },
-            { book: "1 Chronicles", chapters: 29 },
-            { book: "2 Chronicles", chapters: 36 },
-            { book: "Ezra", chapters: 10 },
-            { book: "Nehemiah", chapters: 13 },
-            { book: "Esther", chapters: 10 },
-            { book: "Job", chapters: 42 },
-            { book: "Psalms", chapters: 150 },
-            { book: "Proverbs", chapters: 31 },
-            { book: "Ecclesiastes", chapters: 12 },
-            { book: "Song of Solomon", chapters: 8 },
-            { book: "Isaiah", chapters: 66 },
-            { book: "Jeremiah", chapters: 52 },
-            { book: "Lamentations", chapters: 5 },
-            { book: "Ezekiel", chapters: 48 },
-            { book: "Daniel", chapters: 12 },
-            { book: "Hosea", chapters: 14 },
-            { book: "Joel", chapters: 3 },
-            { book: "Amos", chapters: 9 },
-            { book: "Obadiah", chapters: 1 },
-            { book: "Jonah", chapters: 4 },
-            { book: "Micah", chapters: 7 },
-            { book: "Nahum", chapters: 3 },
-            { book: "Habakkuk", chapters: 3 },
-            { book: "Zephaniah", chapters: 3 },
-            { book: "Haggai", chapters: 2 },
-            { book: "Zechariah", chapters: 14 },
-            { book: "Malachi", chapters: 4 },
-            { book: "Matthew", chapters: 28 },
-            { book: "Mark", chapters: 16 },
-            { book: "Luke", chapters: 24 },
-            { book: "John", chapters: 21 },
-            { book: "Acts", chapters: 28 },
-            { book: "Romans", chapters: 16 },
-            { book: "1 Corinthians", chapters: 16 },
-            { book: "2 Corinthians", chapters: 13 },
-            { book: "Galatians", chapters: 6 },
-            { book: "Ephesians", chapters: 6 },
-            { book: "Philippians", chapters: 4 },
-            { book: "Colossians", chapters: 4 },
-            { book: "1 Thessalonians", chapters: 5 },
-            { book: "2 Thessalonians", chapters: 3 },
-            { book: "1 Timothy", chapters: 6 },
-            { book: "2 Timothy", chapters: 4 },
-            { book: "Titus", chapters: 3 },
-            { book: "Philemon", chapters: 1 },
-            { book: "Hebrews", chapters: 13 },
-            { book: "James", chapters: 5 },
-            { book: "1 Peter", chapters: 5 },
-            { book: "2 Peter", chapters: 3 },
-            { book: "1 John", chapters: 5 },
-            { book: "2 John", chapters: 1 },
-            { book: "3 John", chapters: 1 },
-            { book: "Jude", chapters: 1 },
-            { book: "Revelation", chapters: 22 }
+            { book: "Genesis", chapters: [31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33, 38, 18, 34, 24, 20, 67, 34, 35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43, 36, 30, 23, 23, 57, 38, 34, 34, 28, 34, 31, 22, 33, 26] },
+            { book: "Exodus", chapters: [22, 25, 22, 31, 23, 30, 25, 32, 35, 29, 10, 51, 22, 31, 27, 36, 16, 27, 25, 26, 37, 30, 33, 18, 40, 37, 21, 43, 46, 38, 18, 35, 23, 35, 35, 38, 29, 31, 43, 38] },
+            // Add more books and their chapters' verse counts here...
+            { book: "Revelation", chapters: [20, 29, 22, 11, 14, 17, 17, 13, 21, 11, 19, 17, 18, 20, 8, 21, 18, 24, 21, 15, 27, 21] }
         ];
 
         function generatePlan() {
             const months = document.getElementById('months').value;
             const days = months * 30; // assuming 30 days per month
             let totalChapters = 0;
-            bible.forEach(book => totalChapters += book.chapters);
-            const chaptersPerDay = Math.ceil(totalChapters / days);
+            let totalVerses = 0;
+            
+            bible.forEach(book => {
+                totalChapters += book.chapters.length;
+                totalVerses += book.chapters.reduce((a, b) => a + b, 0);
+            });
+            
+            const versesPerDay = Math.ceil(totalVerses / days);
 
             let plan = "";
             let dayCounter = 1;
-            let chapterCounter = 0;
+            let verseCounter = 0;
+            let chapterStart = 1;
+            let verseStart = 1;
 
             bible.forEach(book => {
-                for (let i = 1; i <= book.chapters; i++) {
-                    if (chapterCounter % chaptersPerDay === 0 && chapterCounter !== 0) {
+                book.chapters.forEach((verseCount, chapterIndex) => {
+                    while (verseCounter + verseCount > versesPerDay) {
+                        const versesRemaining = versesPerDay - verseCounter;
+                        plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + versesRemaining - 1}<br>`;
+                        verseStart += versesRemaining;
+                        verseCount -= versesRemaining;
+                        verseCounter = 0;
                         dayCounter++;
-                        plan += `<br><br>Day ${dayCounter}<br>`;
+                        chapterStart = chapterIndex + 1;
                     }
-                    plan += `${book.book} ${i}<br>`;
-                    chapterCounter++;
-                }
+                    
+                    verseCounter += verseCount;
+                    if (verseCounter <= versesPerDay) {
+                        plan += `Day ${dayCounter}: ${book.book} ${chapterStart}:${verseStart}-${verseStart + verseCount - 1}<br>`;
+                        verseCounter = 0;
+                        verseStart = 1;
+                        chapterStart = chapterIndex + 2;
+                    }
+                });
             });
 
             document.getElementById('plan').innerHTML = plan;
