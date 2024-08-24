@@ -135,6 +135,11 @@
                 return;
             }
         
+            if (!testament) {
+                alert("Please select a part of the Bible.");
+                return;
+            }
+        
             const days = months * 30; // Total number of days
         
             // Filter the Bible based on the selected testament
@@ -161,10 +166,11 @@
             let chapterCounter = 0;
             let startChapter = 1;
             let currentBook = filteredBible[0].book;
+            let currentBookIndex = 0;
         
-            for (let i = 0; i < filteredBible.length; i++) {
-                const book = filteredBible[i];
-        
+            while (dayCounter <= days && currentBookIndex < filteredBible.length) {
+                const book = filteredBible[currentBookIndex];
+                
                 for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
                     if (chapterCounter === 0) {
                         startChapter = chapterIndex + 1;
@@ -173,31 +179,44 @@
         
                     chapterCounter++;
         
+                    // If the daily chapter limit is reached or the book ends, create the entry
                     if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
                         plan += `Day ${dayCounter}: ${currentBook} Ch ${startChapter}-${chapterIndex + 1}<br>`;
                         chapterCounter = 0;
                         dayCounter++;
-        
-                        // Handle overflow if a book ends exactly at the chapter limit
-                        if (chapterIndex === book.chapters.length - 1) {
-                            chapterCounter = 0;
-                        }
                     }
         
-                    If we reach the last day, stop
+                    // If we reach the last day, stop
                     if (dayCounter > days) {
                         break;
                     }
                 }
         
-                if (dayCounter > days) {
-                    break;
-                }
-            }
+                currentBookIndex++;
         
-            // If there are remaining chapters on the last day, add them
-            if (chapterCounter > 0 && dayCounter <= days) {
-                plan += `Day ${dayCounter}: ${currentBook} Ch ${startChapter}-${filteredBible[filteredBible.length - 1].chapters.length}<br>`;
+                // If the book ends but there are still chapters left for the day, continue to the next book
+                while (chapterCounter > 0 && currentBookIndex < filteredBible.length) {
+                    const nextBook = filteredBible[currentBookIndex];
+                    startChapter = 1;
+                    currentBook = nextBook.book;
+                    for (let chapterIndex = 0; chapterIndex < nextBook.chapters.length; chapterIndex++) {
+                        chapterCounter++;
+        
+                        if (chapterCounter === chaptersPerDay || chapterIndex === nextBook.chapters.length - 1) {
+                            plan += `Day ${dayCounter}: ${currentBook} Ch ${startChapter}-${chapterIndex + 1}<br>`;
+                            chapterCounter = 0;
+                            dayCounter++;
+                            break;
+                        }
+                    }
+        
+                    currentBookIndex++;
+        
+                    // If we reach the last day, stop
+                    if (dayCounter > days) {
+                        break;
+                    }
+                }
             }
         
             document.getElementById('plan').innerHTML = plan;
