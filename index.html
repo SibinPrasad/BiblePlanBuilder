@@ -185,9 +185,9 @@
                     }
         
                     // If we reach the last day, stop
-                    if (dayCounter > days) {
-                        break;
-                    }
+                    // if (dayCounter > days) {
+                    //     break;
+                    // }
                 }
         
                 if (dayCounter > days) {
@@ -226,16 +226,16 @@
         ];
 
 
-        function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+        // function downloadPDF() {
+        //     const { jsPDF } = window.jspdf;
+        //     const doc = new jsPDF();
 
-            let planText = document.getElementById('plan').innerText;
-            doc.setFontSize(12);
-            doc.text(planText, 10, 10, { maxWidth: 190 });
+        //     let planText = document.getElementById('plan').innerText;
+        //     doc.setFontSize(12);
+        //     doc.text(planText, 10, 10, { maxWidth: 190 });
 
-            doc.save('BibleReadingPlan.pdf');
-        }
+        //     doc.save('BibleReadingPlan.pdf');
+        // }
     </script>
 </body>
 </html>
