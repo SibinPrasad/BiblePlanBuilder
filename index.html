@@ -167,71 +167,37 @@
             let startChapter = 1;
             let currentBook = filteredBible[0].book;
             let currentBookIndex = 0;
-            let currentPlanEntry = `Day ${dayCounter}: `; // Initialize plan entry for the current day
         
             while (dayCounter <= days && currentBookIndex < filteredBible.length) {
-                const book = filteredBible[currentBookIndex];
+                let currentPlanEntry = `Day ${dayCounter}: `;
+                while (chapterCounter < chaptersPerDay && currentBookIndex < filteredBible.length) {
+                    const book = filteredBible[currentBookIndex];
+                    const remainingChaptersInBook = book.chapters.length - startChapter + 1;
+        
+                    if (chapterCounter + remainingChaptersInBook <= chaptersPerDay) {
+                        // Add entire remaining part of the book
+                        currentPlanEntry += `${currentBook} Ch ${startChapter}-${book.chapters.length}, `;
+                        chapterCounter += remainingChaptersInBook;
+                        startChapter = 1; // Reset for next book
+                        currentBookIndex++; // Move to the next book
+                        if (currentBookIndex < filteredBible.length) {
+                            currentBook = filteredBible[currentBookIndex].book;
+                        }
+                    } else {
+                        // Add only the necessary chapters to meet the daily quota
+                        const endChapter = startChapter + (chaptersPerDay - chapterCounter) - 1;
+                        currentPlanEntry += `${currentBook} Ch ${startChapter}-${endChapter}, `;
+                        startChapter = endChapter + 1; // Set start chapter for next day
+                        chapterCounter = chaptersPerDay; // Mark this day as complete
+                    }
+                }
+        
+                // Remove the trailing comma and space
+                currentPlanEntry = currentPlanEntry.slice(0, -2);
+                plan += currentPlanEntry + "<br>";
                 
-                for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
-                    if (chapterCounter === 0) {
-                        startChapter = chapterIndex + 1;
-                        currentBook = book.book;
-                    }
-        
-                    chapterCounter++;
-        
-                    // If we finish a book but haven't completed the day's chapter count, continue to the next book
-                    if (chapterCounter === chaptersPerDay || chapterIndex === book.chapters.length - 1) {
-                        currentPlanEntry += `${currentBook} Ch ${startChapter}-${chapterIndex + 1}, `;
-                        chapterCounter = 0;
-                        
-                        // If we've reached the chapter limit for the day, finalize the current day
-                        if (chapterCounter === 0) {
-                            currentPlanEntry = currentPlanEntry.slice(0, -2); // Remove the last comma and space
-                            plan += currentPlanEntry + "<br>";
-                            dayCounter++;
-                            currentPlanEntry = `Day ${dayCounter}: `; // Start a new entry for the next day
-                        }
-                    }
-                }
-        
-                currentBookIndex++;
-        
-                // If we finish a book and still have chapters to fill, continue with the next book
-                while (chapterCounter > 0 && currentBookIndex < filteredBible.length) {
-                    const nextBook = filteredBible[currentBookIndex];
-                    startChapter = 1;
-                    currentBook = nextBook.book;
-                    for (let chapterIndex = 0; chapterIndex < nextBook.chapters.length; chapterIndex++) {
-                        chapterCounter++;
-        
-                        // Add the chapters from the new book to the same day's plan
-                        if (chapterCounter === chaptersPerDay || chapterIndex === nextBook.chapters.length - 1) {
-                            currentPlanEntry += `${currentBook} Ch ${startChapter}-${chapterIndex + 1}, `;
-                            chapterCounter = 0;
-        
-                            if (chapterCounter === 0) {
-                                currentPlanEntry = currentPlanEntry.slice(0, -2); // Remove the last comma and space
-                                plan += currentPlanEntry + "<br>";
-                                dayCounter++;
-                                currentPlanEntry = `Day ${dayCounter}: `; // Start a new entry for the next day
-                                break;
-                            }
-                        }
-                    }
-        
-                    currentBookIndex++;
-        
-                    // If we reach the last day, stop
-                    if (dayCounter > days) {
-                        break;
-                    }
-                }
-            }
-        
-            // If there's any remaining chapters to add at the end
-            if (currentPlanEntry.trim() !== `Day ${dayCounter}:`) {
-                plan += currentPlanEntry.slice(0, -2) + "<br>"; // Remove trailing comma and space
+                dayCounter++;
+                chapterCounter = 0; // Reset for the next day
             }
         
             document.getElementById('plan').innerHTML = plan;
